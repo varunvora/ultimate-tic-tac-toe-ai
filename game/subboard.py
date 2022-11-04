@@ -1,6 +1,4 @@
-import re
-from string import ascii_lowercase
-from typing import Tuple, Optional
+from typing import Tuple, Optional, List
 
 import numpy as np
 
@@ -19,32 +17,24 @@ class SubBoard:
     def __init__(self, n: int):
         self.n: int = n
         self.grid = np.array([[0 for _ in range(n)] for __ in range(n)], dtype=np.byte)
-        self.winner = None
+        self.winner: Optional[int] = None
 
     def __repr__(self):
         return f'{self.grid}'
-
-    @staticmethod  # todo decide encoding-decoding
-    def encode_position(i: int, j: int) -> str:
-        return f'{i + 1}{ascii_lowercase[j]}'
-
-    @staticmethod
-    def decode_position(position: str) -> Tuple[int, int]:
-        row = re.findall(r'\d+', position)[0]
-        col = re.findall(r'\D+', position)[0]
-        return int(row) - 1, ascii_lowercase.index(col)
 
     def is_board_full(self) -> bool:
         return np.count_nonzero(self.grid) == (self.n ** 2)
 
     def play(self, player: int, position: Tuple[int, int]) -> Optional[int]:
         i, j = position
-        assert self.grid[i][j] == 0
+        assert self.grid[i][j] == 0  # can play only on blank cells
+        assert self.winner is None  # can not play on a board after it's won
         self.grid[i][j] = player
         if self.is_winner(player, position):
             self.winner = player
             return self.winner
         if self.is_board_full():
+            self.winner = 0
             return 0  # draw
 
     def process_count(self, player: int, position: Tuple[int, int]) -> int:
@@ -76,8 +66,8 @@ class SubBoard:
             result += 1
         return result
 
-    def get_blank_positions(self) -> np.ndarray:
-        return np.argwhere(self.grid == 0)
+    def get_legal_moves(self) -> List[Tuple[int, int]]:
+        return [(i, j) for i in range(self.n) for j in range(self.n) if self.grid[i][j] == 0]
 
     def is_terminal(self):
         return self.winner is not None or self.is_board_full()
