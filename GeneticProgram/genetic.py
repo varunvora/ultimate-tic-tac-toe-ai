@@ -11,6 +11,41 @@ class GeneticProgram:
     def __init__(self):
         pass
 
+    def reproduce(self, parent_pool):
+        """
+        Will randomly select two parent agents from the parent pool and use them to create two
+        new children. Once the number of children is greater than or equal to the number of parents
+        the reproduction will stop and the list of children will be returned. Note that each
+        parent in the pool to reproduce multiple times or not at all.
+
+        @param parent_pool: A list of parent genetic agents
+        @return: A list of child genetic agents created from the pool of parent agents
+        """
+
+        def select_random_parents():
+            """
+            Selects two random unique positions from the parent_pool and returns the parents at
+            the corresponding indices.
+
+            @return: A tuple of parent agents from the parent pool
+            """
+            first_parent_index = random.randint(0, len(parent_pool)-1)
+
+            second_parent_index = first_parent_index
+            while second_parent_index != first_parent_index:
+                second_parent_index = random.randint(0, len(parent_pool))
+
+            return parent_pool[first_parent_index], parent_pool[second_parent_index]
+
+        children = []
+
+        while len(children) < len(parent_pool):
+            parent1, parent2 = select_random_parents()
+
+            children.extend(self.selection(parent1.traits, parent2.traits))
+
+        return children
+
     def selection(self, parent1_traits, parent2_traits):
         """
         Selects a point to split each parents list of traits. Then calls crossover to
