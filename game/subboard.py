@@ -10,7 +10,7 @@ class SubBoard:
     <ul>
     <li> X is represented by 1 </li>
     <li> O is represented by -1 </li>
-    <li> blank is represented by 1 </li>
+    <li> blank is represented by 0 </li>
     </ul>
     """
 
