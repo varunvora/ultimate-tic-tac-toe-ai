@@ -7,159 +7,159 @@ This package handles the game play. Learn more about the game on [Wikipedia](htt
 <tr>
     <td><table>
 <tr>
-    <td>X</td>
     <td>O</td>
+    <td>X</td>
     <td></td>
 </tr>
 <tr>
     <td></td>
-    <td>X</td>
     <td>O</td>
+    <td>X</td>
 </tr>
 <tr>
-    <td>O</td>
     <td>X</td>
     <td>O</td>
+    <td>X</td>
 </tr>
 </table></td>
     <td><table>
 <tr>
-    <td>X</td>
     <td>O</td>
+    <td>X</td>
     <td></td>
 </tr>
 <tr>
     <td></td>
-    <td>X</td>
     <td>O</td>
+    <td>X</td>
 </tr>
 <tr>
-    <td>O</td>
     <td>X</td>
     <td>O</td>
+    <td>X</td>
 </tr>
 </table></td>
     <td><table>
 <tr>
-    <td>X</td>
     <td>O</td>
+    <td>X</td>
     <td></td>
 </tr>
 <tr>
     <td></td>
-    <td>X</td>
-    <td>O</td>
-</tr>
-<tr>
     <td>O</td>
     <td>X</td>
-    <td>O</td>
 </tr>
-</table></td>
-</tr>
-<tr>
-    <td><table>
 <tr>
     <td>X</td>
     <td>O</td>
-    <td></td>
-</tr>
-<tr>
-    <td></td>
     <td>X</td>
-    <td>O</td>
-</tr>
-<tr>
-    <td>O</td>
-    <td>X</td>
-    <td>O</td>
-</tr>
-</table></td>
-    <td><table>
-<tr>
-    <td>X</td>
-    <td>O</td>
-    <td></td>
-</tr>
-<tr>
-    <td></td>
-    <td>X</td>
-    <td>O</td>
-</tr>
-<tr>
-    <td>O</td>
-    <td>X</td>
-    <td>O</td>
-</tr>
-</table></td>
-    <td><table>
-<tr>
-    <td>X</td>
-    <td>O</td>
-    <td></td>
-</tr>
-<tr>
-    <td></td>
-    <td>X</td>
-    <td>O</td>
-</tr>
-<tr>
-    <td>O</td>
-    <td>X</td>
-    <td>O</td>
 </tr>
 </table></td>
 </tr>
 <tr>
     <td><table>
 <tr>
-    <td>X</td>
     <td>O</td>
+    <td>X</td>
     <td></td>
 </tr>
 <tr>
     <td></td>
-    <td>X</td>
     <td>O</td>
+    <td>X</td>
 </tr>
 <tr>
-    <td>O</td>
     <td>X</td>
     <td>O</td>
+    <td>X</td>
 </tr>
 </table></td>
     <td><table>
 <tr>
-    <td>X</td>
     <td>O</td>
+    <td>X</td>
     <td></td>
 </tr>
 <tr>
     <td></td>
-    <td>X</td>
     <td>O</td>
+    <td>X</td>
 </tr>
 <tr>
-    <td>O</td>
     <td>X</td>
     <td>O</td>
+    <td>X</td>
 </tr>
 </table></td>
     <td><table>
 <tr>
-    <td>X</td>
     <td>O</td>
+    <td>X</td>
     <td></td>
 </tr>
 <tr>
     <td></td>
+    <td>O</td>
+    <td>X</td>
+</tr>
+<tr>
     <td>X</td>
     <td>O</td>
+    <td>X</td>
 </tr>
+</table></td>
+</tr>
+<tr>
+    <td><table>
 <tr>
     <td>O</td>
     <td>X</td>
+    <td></td>
+</tr>
+<tr>
+    <td></td>
     <td>O</td>
+    <td>X</td>
+</tr>
+<tr>
+    <td>X</td>
+    <td>O</td>
+    <td>X</td>
+</tr>
+</table></td>
+    <td><table>
+<tr>
+    <td>O</td>
+    <td>X</td>
+    <td></td>
+</tr>
+<tr>
+    <td></td>
+    <td>O</td>
+    <td>X</td>
+</tr>
+<tr>
+    <td>X</td>
+    <td>O</td>
+    <td>X</td>
+</tr>
+</table></td>
+    <td><table>
+<tr>
+    <td>O</td>
+    <td>X</td>
+    <td></td>
+</tr>
+<tr>
+    <td></td>
+    <td>O</td>
+    <td>X</td>
+</tr>
+<tr>
+    <td>X</td>
+    <td>O</td>
+    <td>X</td>
 </tr>
 </table></td>
 </tr>
@@ -196,19 +196,19 @@ Identical to a regular tic-tac-toe board.
 <html lang="en">
 <table>
 <tr>
-    <td>X</td>
     <td>O</td>
+    <td>X</td>
     <td></td>
 </tr>
 <tr>
     <td></td>
-    <td>X</td>
     <td>O</td>
+    <td>X</td>
 </tr>
 <tr>
-    <td>O</td>
     <td>X</td>
     <td>O</td>
+    <td>X</td>
 </tr>
 </table>
 </html>

@@ -1,9 +1,9 @@
-from unittest import TestCase
+import unittest
 
 from subboard import SubBoard
 
 
-class TestBoard(TestCase):
+class TestSubBoard(unittest.TestCase):
 
     def test_is_board_full(self):
         b = SubBoard(3)
@@ -33,3 +33,7 @@ class TestBoard(TestCase):
         b.play(-1, (0, 4))
 
         self.assertEqual(b.play(1, (4, 0)), 1)
+
+
+if __name__ == '__main__':
+    unittest.main()

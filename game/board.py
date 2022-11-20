@@ -1,7 +1,5 @@
 from typing import Optional, Tuple, List
 
-import numpy as np
-
 from subboard import SubBoard
 
 
@@ -13,7 +11,7 @@ class Board:
     https://en.wikipedia.org/wiki/Ultimate_tic-tac-toe
     """
 
-    def __init__(self, n):
+    def __init__(self, n: int = 3):
         self.n: int = n
         self.grid: List[List[SubBoard]] = [[SubBoard(n) for _ in range(n)] for __ in range(n)]
         self.winner: Optional[int] = None  # set only after game is over. +1 for X, -1 for O, 0 for draw.
@@ -21,12 +19,31 @@ class Board:
         self.last_move: Optional[Tuple[Tuple[int, int], Tuple[int, int]]] = None
         self.turn: int = 1  # X always starts
 
-    def __repr__(self):
+    def get_html(self):
         """
-        :return: String representation of the board. Kinda readable.
+        :return: HTML representation of the board. Kinda readable.
         """
-        t = [[self.grid[i][j].get_grid() for j in range(self.n)] for i in range(self.n)]
-        return str(np.array(t).reshape((self.n*self.n, self.n*self.n)))
+        g = self.grid
+        return f"""
+        <html>
+            <table border="all">
+                <tr>
+                    <td>{g[0][0].get_html()}</td>
+                    <td>{g[0][1].get_html()}</td>
+                    <td>{g[0][2].get_html()}</td>
+                </tr>
+                <tr>
+                    <td>{g[1][0].get_html()}</td>
+                    <td>{g[1][1].get_html()}</td>
+                    <td>{g[1][2].get_html()}</td>
+                </tr>
+                <tr>
+                    <td>{g[2][0].get_html()}</td>
+                    <td>{g[2][1].get_html()}</td>
+                    <td>{g[2][2].get_html()}</td>
+                </tr>
+            </table>
+        </html>"""
 
     def get_grid(self):
         """
@@ -95,12 +112,19 @@ class Board:
         return result
 
     def get_legal_moves(self) -> List[Tuple[Tuple[int, int], Tuple[int, int]]]:
+
+        # in the beginning of the game, all moves are legal
+        if self.last_move is None:
+            return sum([[((x, y), (i, j)) for i, j in self.grid[x][y].get_legal_moves()]
+                        for x in range(self.n) for y in range(self.n)], [])
+
         (_, _), (x, y) = self.last_move  # get the position in the sub-board for the last move
         if not self.grid[x][y].is_terminal():
             return [((x, y), (i, j)) for (i, j) in self.grid[x][y].get_legal_moves()]
 
         # If a player is sent to play on a terminal board, then that player may play in any other board.
-        return sum([self.grid[x][y].get_legal_moves() for x in range(self.n) for y in range(self.n)], [])
+        return sum([[((x, y), (i, j)) for i, j in self.grid[x][y].get_legal_moves()]
+                    for x in range(self.n) for y in range(self.n)], [])
 
     def is_terminal(self):
         """

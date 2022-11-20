@@ -70,7 +70,30 @@ class SubBoard:
         return result
 
     def get_legal_moves(self) -> List[Tuple[int, int]]:
-        return [(i, j) for i in range(self.n) for j in range(self.n) if self.grid[i][j] == 0]
+        if self.winner is None:
+            return [(i, j) for i in range(self.n) for j in range(self.n) if self.grid[i][j] == 0]
+        return []
 
     def is_terminal(self):
         return self.winner is not None or self.is_board_full()
+
+    def get_html(self):
+        t = lambda x, y: 'X' if self.grid[x][y] == 1 else ('O' if self.grid[x][y] == -1 else '_')
+        return f"""<table>
+            <tr>
+                <td>{t(0, 0)}</td>
+                <td>{t(0, 1)}</td>
+                <td>{t(0, 2)}</td>
+            </tr>
+            <tr>
+                <td>{t(1, 0)}</td>
+                <td>{t(1, 1)}</td>
+                <td>{t(1, 2)}</td>
+            </tr>
+            <tr>
+                <td>{t(2, 0)}</td>
+                <td>{t(2, 1)}</td>
+                <td>{t(2, 2)}</td>
+            </tr>
+        </table>
+        """
