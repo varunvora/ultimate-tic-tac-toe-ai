@@ -22,6 +22,9 @@ class SubBoard:
     def __repr__(self):
         return f'{self.grid}'
 
+    def get_grid(self):
+        return self.grid
+
     def is_board_full(self) -> bool:
         return np.count_nonzero(self.grid) == (self.n ** 2)
 

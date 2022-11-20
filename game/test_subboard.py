@@ -4,16 +4,6 @@ from subboard import SubBoard
 
 
 class TestBoard(TestCase):
-    def test_encode_position(self):
-        self.assertEqual(SubBoard.encode_position(0, 0), '1a')
-
-    def test_decode_position(self):
-        self.assertEqual(SubBoard.decode_position('1a'), (0, 0))
-
-    def test_encode_decode(self):
-        for i in range(10):
-            for j in range(10):
-                self.assertEqual(SubBoard.decode_position(SubBoard.encode_position(i, j)), (i, j))
 
     def test_is_board_full(self):
         b = SubBoard(3)
@@ -43,5 +33,3 @@ class TestBoard(TestCase):
         b.play(-1, (0, 4))
 
         self.assertEqual(b.play(1, (4, 0)), 1)
-
-

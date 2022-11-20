@@ -1,0 +1,214 @@
+# Game
+This package handles the game play. Learn more about the game on [Wikipedia](https://en.wikipedia.org/wiki/Ultimate_tic-tac-toe).
+
+## Representation
+<html lang="en">
+<table>
+<tr>
+    <td><table>
+<tr>
+    <td>X</td>
+    <td>O</td>
+    <td></td>
+</tr>
+<tr>
+    <td></td>
+    <td>X</td>
+    <td>O</td>
+</tr>
+<tr>
+    <td>O</td>
+    <td>X</td>
+    <td>O</td>
+</tr>
+</table></td>
+    <td><table>
+<tr>
+    <td>X</td>
+    <td>O</td>
+    <td></td>
+</tr>
+<tr>
+    <td></td>
+    <td>X</td>
+    <td>O</td>
+</tr>
+<tr>
+    <td>O</td>
+    <td>X</td>
+    <td>O</td>
+</tr>
+</table></td>
+    <td><table>
+<tr>
+    <td>X</td>
+    <td>O</td>
+    <td></td>
+</tr>
+<tr>
+    <td></td>
+    <td>X</td>
+    <td>O</td>
+</tr>
+<tr>
+    <td>O</td>
+    <td>X</td>
+    <td>O</td>
+</tr>
+</table></td>
+</tr>
+<tr>
+    <td><table>
+<tr>
+    <td>X</td>
+    <td>O</td>
+    <td></td>
+</tr>
+<tr>
+    <td></td>
+    <td>X</td>
+    <td>O</td>
+</tr>
+<tr>
+    <td>O</td>
+    <td>X</td>
+    <td>O</td>
+</tr>
+</table></td>
+    <td><table>
+<tr>
+    <td>X</td>
+    <td>O</td>
+    <td></td>
+</tr>
+<tr>
+    <td></td>
+    <td>X</td>
+    <td>O</td>
+</tr>
+<tr>
+    <td>O</td>
+    <td>X</td>
+    <td>O</td>
+</tr>
+</table></td>
+    <td><table>
+<tr>
+    <td>X</td>
+    <td>O</td>
+    <td></td>
+</tr>
+<tr>
+    <td></td>
+    <td>X</td>
+    <td>O</td>
+</tr>
+<tr>
+    <td>O</td>
+    <td>X</td>
+    <td>O</td>
+</tr>
+</table></td>
+</tr>
+<tr>
+    <td><table>
+<tr>
+    <td>X</td>
+    <td>O</td>
+    <td></td>
+</tr>
+<tr>
+    <td></td>
+    <td>X</td>
+    <td>O</td>
+</tr>
+<tr>
+    <td>O</td>
+    <td>X</td>
+    <td>O</td>
+</tr>
+</table></td>
+    <td><table>
+<tr>
+    <td>X</td>
+    <td>O</td>
+    <td></td>
+</tr>
+<tr>
+    <td></td>
+    <td>X</td>
+    <td>O</td>
+</tr>
+<tr>
+    <td>O</td>
+    <td>X</td>
+    <td>O</td>
+</tr>
+</table></td>
+    <td><table>
+<tr>
+    <td>X</td>
+    <td>O</td>
+    <td></td>
+</tr>
+<tr>
+    <td></td>
+    <td>X</td>
+    <td>O</td>
+</tr>
+<tr>
+    <td>O</td>
+    <td>X</td>
+    <td>O</td>
+</tr>
+</table></td>
+</tr>
+</table>
+</html>
+
+This representation is broken down naturally into a [Board](board.py) and [SubBoard](subboard.py)s.
+
+
+### Board
+<html lang="en">
+<table>
+<tr>
+    <td>SubBoard</td>
+    <td>SubBoard</td>
+    <td>SubBoard</td>
+</tr>
+<tr>
+    <td>SubBoard</td>
+    <td>SubBoard</td>
+    <td>SubBoard</td>
+</tr>
+<tr>
+    <td>SubBoard</td>
+    <td>SubBoard</td>
+    <td>SubBoard</td>
+</tr>
+</table>
+</html>
+
+
+### SubBoard
+Identical to a regular tic-tac-toe board.
+<html lang="en">
+<table>
+<tr>
+    <td>X</td>
+    <td>O</td>
+    <td></td>
+</tr>
+<tr>
+    <td></td>
+    <td>X</td>
+    <td>O</td>
+</tr>
+<tr>
+    <td>O</td>
+    <td>X</td>
+    <td>O</td>
+</tr>
+</table>
+</html>
