@@ -4,6 +4,8 @@ be replaced once the needed portions of the genetic agent have been fleshed out.
 """
 
 import random
+from agent.genetic_agent import GeneticAgent
+from typing import Optional, Tuple, List
 
 
 class GeneticProgram:
@@ -11,7 +13,7 @@ class GeneticProgram:
     def __init__(self):
         pass
 
-    def reproduce(self, parent_pool):
+    def reproduce(self, parent_pool: List[GeneticAgent]) -> List[GeneticAgent]:
         """
         Will randomly select two parent agents from the parent pool and use them to create two
         new children. Once the number of children is greater than or equal to the number of parents
@@ -46,7 +48,8 @@ class GeneticProgram:
 
         return children
 
-    def selection(self, parent1_traits, parent2_traits):
+    def selection(self, parent1_traits: List[float], parent2_traits: List[float]) -> Tuple[
+        GeneticAgent, GeneticAgent]:
         """
         Selects a point to split each parents list of traits. Then calls crossover to
         cross the traits at the selected point to create 2 new children.
@@ -58,7 +61,8 @@ class GeneticProgram:
         cross_point = random.randint(1, len(parent1_traits)-2)
         return self.crossover(parent1_traits, parent2_traits, cross_point)
 
-    def crossover(self, parent1_traits, parent2_traits, cross_point):
+    def crossover(self, parent1_traits: List[float], parent2_traits: List[float], cross_point:
+    int) -> Tuple[GeneticAgent, GeneticAgent]:
         """
         Splits the given parent's trait lists at the crossing point creating a left half and
         right half of the traits. Combines the first parent's left half with the second
@@ -81,19 +85,27 @@ class GeneticProgram:
         parent2_left = parent2_traits[0:cross_point]
         parent2_right = parent2_traits[cross_point:len(parent2_traits)]
 
+        # Create the traits for the new child agents
+        child1_traits = []
+        child2_traits = []
+
+        child1_traits.extend(parent1_left)
+        child1_traits.extend(parent2_right)
+
+        child2_traits.extend(parent2_left)
+        child2_traits.extend(parent1_right)
+
         # Create the new child agents
-        child1 = []
-        child2 = []
+        child1 = GeneticAgent(existing_traits=child1_traits)
+        child2 = GeneticAgent(existing_traits=child2_traits)
 
-        child1.extend(parent1_left)
-        child1.extend(parent2_right)
-
-        child2.extend(parent2_left)
-        child2.extend(parent1_right)
+        # Mutate the child agents
+        child1 = self.mutation(child1)
+        child2 = self.mutation(child2)
 
         return child1, child2
 
-    def mutation(self, child):
+    def mutation(self, child: GeneticAgent) -> GeneticAgent:
         """
         Will randomly mutate the given child object's traits. Currently there is a 35% chance
         that the mutation will happen. If the mutation does happen then a new trait value between

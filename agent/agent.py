@@ -10,9 +10,9 @@ class Agent:
 
     def play_move(self):
         """
-        Should be overloaded by child agent classes to add the need functionality for thier
+        Should be overloaded by child agent classes to add the needed functionality for their
         implementation
-        @return:
+        @return: None
         """
         pass
 
@@ -28,8 +28,8 @@ class Agent:
     def set_current_board(self, new_board):
         """
         Sets the current board the agent is playing to the given one.
-        @param new_board:
-        @return:
+        @param new_board: A reference to the board object the agent will be playing on
+        @return: None
         """
         self.current_board = new_board
 
@@ -57,7 +57,7 @@ class Agent:
 
     def get_available_spaces(self):
         """
-        Should be overloaded by child agent classes to add the need functionality for thier
+        Should be overloaded by child agent classes to add the needed functionality for their
         implementation
         @return: None
         """
