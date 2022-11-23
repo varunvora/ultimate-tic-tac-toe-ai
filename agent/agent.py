@@ -1,17 +1,20 @@
+from game.board import Board
+
 
 class Agent:
     """
     Template for all agents to implement
     """
+
     def __init__(self, agent_name=""):
         self.agent_name = ""
         self.current_piece = None
         self.current_board = None
 
-    def play_move(self):
+    def play_move(self, board: Board):
         """
         Should be overloaded by child agent classes to add the needed functionality for their
-        implementation
+        implementation. Makes a move on the board.
         @return: None
         """
         pass
