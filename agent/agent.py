@@ -10,6 +10,7 @@ class Agent:
         self.agent_name = ""
         self.current_piece = None
         self.current_board = None
+        self.opponent_piece = None
 
     def play_move(self, board: Board):
         """
@@ -36,6 +37,17 @@ class Agent:
         """
         self.current_board = new_board
 
+    def set_opponent_piece(self, player_piece):
+        """
+        Use the current piece to determine the opponent's piece
+        @param player_piece: The piece this agent will be playing with
+        @return: None
+        """
+        if player_piece == 1:
+            self.opponent_piece = -1
+        else:
+            self.opponent_piece = 1
+
     def start_game(self, board, piece):
         """
         When the games starts the agent will receive a reference to the board object that it is
@@ -47,6 +59,7 @@ class Agent:
         """
         self.set_current_piece(piece)
         self.set_current_board(board)
+        self.set_opponent_piece(piece)
 
     def end_game(self):
         """

@@ -11,7 +11,27 @@ from typing import Optional, Tuple, List
 class GeneticProgram:
 
     def __init__(self):
-        pass
+        self.current_agent_number = 0
+
+    def generate_random_agent(self) -> GeneticAgent:
+        """
+        Creates a new genetic agent with randomly generated traits.
+        @return: A genetic agent object
+        """
+        new_agent = GeneticAgent("GeneticAgent"+str(self.current_agent_number))
+        self.current_agent_number += 1
+        new_agent.set_traits(self.generate_random_traits())
+        return new_agent
+
+    def generate_random_traits(self) -> List[float]:
+        """
+        Generates a new set of 9 traits for a genetic agent with random values between 0 and 1 as traits
+        @return: A list of floats that are between 0 and 1
+        """
+        traits = []
+        for num in range(0, 9):
+            traits.append(random.random())
+        return traits
 
     def reproduce(self, parent_pool: List[GeneticAgent]) -> List[GeneticAgent]:
         """
@@ -24,7 +44,7 @@ class GeneticProgram:
         @return: A list of child genetic agents created from the pool of parent agents
         """
 
-        def select_random_parents():
+        def select_random_parents() -> Tuple[GeneticAgent, GeneticAgent]:
             """
             Selects two random unique positions from the parent_pool and returns the parents at
             the corresponding indices.
