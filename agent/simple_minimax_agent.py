@@ -28,14 +28,14 @@ class SimpleMinimaxAgent(Agent):
         if board.is_terminal():
             return board.winner, None
         if depth >= self.max_depth:
-            return alpha, board.get_legal_moves()[0]  # todo we can do better here?
+            return 0, board.get_legal_moves()[0]  # todo we can do better here?
         v, move = -float('inf'), None
         for (x, y), (i, j) in board.get_legal_moves():
             board_copy = deepcopy(board)
             board_copy.play(1, (x, y), (i, j))
             v2, a2 = self.min_value(board_copy, alpha, beta, depth + 1)
             if v2 > v:
-                v, move = v2, (i, j)
+                v, move = v2, ((x, y), (i, j))
                 alpha = max(alpha, v)
             if v >= beta:
                 return v, move
@@ -46,7 +46,7 @@ class SimpleMinimaxAgent(Agent):
         if board.is_terminal():
             return board.winner, None
         if depth >= self.max_depth:
-            return beta, board.get_legal_moves()[0]  # todo we can do better here?
+            return 0, board.get_legal_moves()[0]  # todo we can do better here?
         v, move = float('inf'), None
         for (x, y), (i, j) in board.get_legal_moves():
             board_copy = deepcopy(board)
