@@ -1,6 +1,6 @@
 from typing import Optional, Tuple, List
 
-from subboard import SubBoard
+from game.subboard import SubBoard
 
 
 class Board:
@@ -78,7 +78,7 @@ class Board:
             if self._is_winner(player, board_position):
                 self.winner = player
                 return self.winner
-            if self.is_board_full():
+            if self.is_terminal():
                 self.winner = 0
                 return 0  # draw
 
@@ -128,7 +128,7 @@ class Board:
 
     def is_terminal(self):
         """
-        Checks if the game has ended by checking if there is a winner or the board is full
+        Checks if the game has ended by checking if there is a winner if all boards are terminal
         :return: True if the game has ended
         """
-        return self.winner is not None or self.is_board_full()
+        return self.winner is not None or all([x.is_terminal() for x in sum(self.grid, [])])
