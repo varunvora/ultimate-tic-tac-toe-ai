@@ -1,6 +1,6 @@
 from copy import deepcopy
 from typing import Optional
-from agent import Agent
+from agent.base_agent import Agent
 from game.board import Board
 
 

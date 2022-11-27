@@ -1,4 +1,4 @@
-from agent.agent import Agent
+from base_agent.agent import Agent
 
 
 class MinimaxAgent(Agent):
