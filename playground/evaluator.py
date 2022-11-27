@@ -40,9 +40,19 @@ def evaluate(a: Agent, b: Agent, num_games: int = 100) -> float:
 if __name__ == '__main__':
     # Testing the evaluator. Score should be around 0.5 for random agents.
     from agent.random_agent import RandomAgent
+
     p, q = RandomAgent(), RandomAgent()
     print(evaluate(p, q))
 
-    p = SimpleMinimaxAgent(max_depth=4)
     # simple minimax agent should be better, may take some time to finish
+    p = SimpleMinimaxAgent(max_depth=4)
     print(evaluate(p, q, num_games=8))
+
+    # Deeper minimax agent must outperform shallower minimax agent? Nope, it's 0.5
+    q = SimpleMinimaxAgent(max_depth=2)
+    print(evaluate(p, q, num_games=16))
+
+    # Let's go 1 step deeper. Wins 75% !
+    p = SimpleMinimaxAgent(max_depth=5)
+    print(evaluate(p, q, num_games=16))
+
