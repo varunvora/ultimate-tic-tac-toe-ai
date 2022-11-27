@@ -1,7 +1,7 @@
 from time import time
 from copy import deepcopy
 from typing import Optional, Tuple, List
-from base_agent.agent import Agent
+from agent.base_agent import Agent
 from game.board import Board
 from game.subboard import SubBoard
 
