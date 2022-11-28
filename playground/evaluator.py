@@ -1,6 +1,8 @@
 from typing import Optional
 from agent.base_agent import Agent
 from agent.simple_minimax_agent import SimpleMinimaxAgent
+from agent.genetic_agent import GeneticAgent
+from GeneticProgram.genetic import GeneticProgram
 from game.board import Board
 
 
@@ -55,4 +57,8 @@ if __name__ == '__main__':
     # Let's go 1 step deeper. Wins 75% !
     p = SimpleMinimaxAgent(max_depth=5)
     print(evaluate(p, q, num_games=16))
+
+    gp = GeneticProgram()
+    g = gp.generate_random_agent()
+    print(evaluate(g, p, num_games=8))
 

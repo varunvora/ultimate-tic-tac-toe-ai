@@ -1,7 +1,7 @@
 from time import time
 from copy import deepcopy
 from typing import Optional, Tuple, List
-from base_agent.agent import Agent
+from agent.base_agent import Agent
 from game.board import Board
 from game.subboard import SubBoard
 
@@ -15,6 +15,7 @@ class GeneticAgent(Agent):
         self.traits = existing_traits
         self.win_count = 0
         self.lose_count = 0
+        self.total_turns = 0
         self.move_scores = []
         self.average_time = 0
 
@@ -52,7 +53,11 @@ class GeneticAgent(Agent):
         #     corresponding subboard
         # Play the move on the board
 
+        self.current_piece = board.turn
+        self.set_opponent_piece(self.current_piece)
+
         start_time = round(time() * 1000)
+        self.total_turns += 1
 
         # Find and play move
         val, global_move, sub_move = self.alpha_beta(board, 0, True)
@@ -61,8 +66,8 @@ class GeneticAgent(Agent):
         # Calculate new average time
         end_time = round(time() * 1000)
         duration = end_time - start_time # in milliseconds
-        total_games = (self.win_count + self.lose_count)
-        self.average_time = ((self.average_time * total_games) + duration) / total_games
+        #total_games = (self.win_count + self.lose_count)
+        self.average_time = ((self.average_time * self.total_turns) + duration) / self.total_turns
 
     def start_game(self, board: Board, piece: int) -> None:
         """
@@ -88,7 +93,7 @@ class GeneticAgent(Agent):
         """
 
         depth = 5
-        if max_player:
+        if self.current_piece == 1:
             val, global_move, sub_move = self.maximize_value(board, current_board, depth, float("-inf"), float("inf"))
         else:
             val, global_move, sub_move = self.minimize_value(board, current_board, depth, float("-inf"), float("inf"))
@@ -116,6 +121,9 @@ class GeneticAgent(Agent):
         best_board_move = (-1, -1)
         best_subboard_move = (-1, -1)
 
+        if board.is_terminal():
+            return board.winner, best_board_move, best_subboard_move
+
         # perform depth check
         if depth <= 0:
             # Evaluate current board
@@ -128,10 +136,10 @@ class GeneticAgent(Agent):
 
         # For each available space (limited to specific or all available space depending on last
         # move)
-        for brd, subs in available:
+        for brd, subs in board.get_legal_moves():
             # Play piece
             temp_board = deepcopy(board)
-            temp_board.play(self.current_piece, brd, subs)
+            temp_board.play(1, brd, subs)
             sub_index = brd[1] + 3 * brd[0] # Convert the 2D coordinates of the subboard to a 1D index
             possible_v, global_move, sub_move = self.minimize_value(temp_board, sub_index,
                                                                     depth-1, alpha, beta)
@@ -139,8 +147,8 @@ class GeneticAgent(Agent):
 
             if possible_v > v:
                 v = possible_v
-                best_board_move = global_move
-                best_subboard_move = sub_move
+                best_board_move = brd
+                best_subboard_move = subs
 
             if v >= beta:
                 return v, best_board_move, best_subboard_move
@@ -168,6 +176,9 @@ class GeneticAgent(Agent):
         best_board_move = (-1, -1)
         best_subboard_move = (-1, -1)
 
+        if board.is_terminal():
+            return board.winner, best_board_move, best_subboard_move
+
         # perform depth check
         if depth <= 0:
             # Evaluate current board
@@ -180,10 +191,10 @@ class GeneticAgent(Agent):
 
         # For each available space (limited to specific or all available space depending on last
         # move)
-        for brd, subs in available:
+        for brd, subs in board.get_legal_moves():
             # Play piece
             temp_board = deepcopy(board)
-            temp_board.play(self.current_piece, brd, subs)
+            temp_board.play(-1, brd, subs)
             sub_index = brd[1] + 3 * brd[0] # Convert the 2D coordinates of the subboard to a 1D index
             possible_v, global_move, sub_move = self.maximize_value(temp_board, sub_index,
                                                                     depth - 1, alpha, beta)
@@ -191,8 +202,8 @@ class GeneticAgent(Agent):
 
             if possible_v < v:
                 v = possible_v
-                best_board_move = global_move
-                best_subboard_move = sub_move
+                best_board_move = brd
+                best_subboard_move = subs
 
             if v <= alpha:
                 return v, best_board_move, best_subboard_move
@@ -224,19 +235,25 @@ class GeneticAgent(Agent):
         evaluation = 0
         global_board = []
         sub_list = convert_to_list(board.get_grid())
+        board_win = board.winner
+        if board_win is None:
+            board_win = 0
 
         for num, sub in enumerate(sub_list):
-            sub_list = sub.get_grid()
-            eval_val = self.evaluate_board(sub_list, sub.winner)
+            sub_list = convert_to_list(sub.get_grid())
+            sub_win = sub.winner
+            if sub_win is None:
+                sub_win = 0
+            eval_val = self.evaluate_board(sub_list, sub_win)
             evaluation += eval_val * 1.5 * self.traits[num]
             if current_board == num:
                 evaluation += eval_val * self.traits[num]
-            temp_eval = sub.winner
+            temp_eval = sub_win
             evaluation -= temp_eval * self.traits[num]
             global_board.append(temp_eval)
 
-        evaluation -= board.winner * 5000
-        evaluation += self.evaluate_board(global_board, board.winner) * 150
+        evaluation -= board_win * 5000
+        evaluation += self.evaluate_board(global_board, board_win) * 150
 
         return evaluation
 
@@ -303,6 +320,7 @@ class GeneticAgent(Agent):
             return eval_num
 
         evaluation = 0
+
         # Score the specific position based on it's placement alone
         for num, val in enumerate(self.traits):
             evaluation -= sub_board[num] * val
@@ -314,6 +332,6 @@ class GeneticAgent(Agent):
         evaluation = eval_player(self.opponent_piece, evaluation, False)
 
         # Check if the board has already been won
-        evaluation -= winner * 12
+        evaluation -= winner
 
-        return evaluation
+        return evaluation / 12
