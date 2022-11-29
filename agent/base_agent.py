@@ -7,7 +7,7 @@ class Agent:
     """
 
     def __init__(self, agent_name=""):
-        self.agent_name = ""
+        self.agent_name = agent_name
         self.current_piece = None
         self.current_board = None
         self.opponent_piece = None

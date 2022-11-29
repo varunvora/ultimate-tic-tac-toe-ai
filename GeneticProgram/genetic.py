@@ -4,6 +4,8 @@ be replaced once the needed portions of the genetic agent have been fleshed out.
 """
 
 import random
+from time import time
+
 from agent.genetic_agent import GeneticAgent
 from playground.evaluator import evaluate
 from typing import Optional, Tuple, List
@@ -117,8 +119,11 @@ class GeneticProgram:
         child2_traits.extend(parent1_right)
 
         # Create the new child agents
-        child1 = GeneticAgent(existing_traits=child1_traits)
-        child2 = GeneticAgent(existing_traits=child2_traits)
+        child1 = GeneticAgent(agent_name="GeneticAgent"+str(self.current_agent_number),existing_traits=child1_traits)
+        self.current_agent_number += 1
+        child2 = GeneticAgent(agent_name="GeneticAgent"+str(self.current_agent_number),
+                              existing_traits=child2_traits)
+        self.current_agent_number += 1
 
         # Mutate the child agents
         child1 = self.mutation(child1)
@@ -155,6 +160,7 @@ class GeneticProgram:
         @return: A list of the top k genetic agents from the given pool
         """
         #pool.sort(key=lambda x: (x.total_win_score, x.average_time), reverse=True)
+        print("Performing fitness")
         pool.sort(key=lambda x: x.average_time)
         pool.sort(key=lambda x: x.total_win_score, reverse=True)
         return pool[0:top_k_num]
@@ -175,8 +181,9 @@ class GeneticProgram:
             @param competition: The remaining agents in the pool
             @return: None
             """
+            print("Starting competition with " + player.agent_name)
             for opponent in competition:
-                player_score = evaluate(player, opponent, 15)
+                player_score = evaluate(player, opponent, 6)
                 player.total_win_score += player_score
                 opponent.total_win_score += (1 - player_score)
                 player.total_genetic_rounds += 1
@@ -209,6 +216,7 @@ class GeneticProgram:
             @param generations_left: The number of remaining generations before evolutions concludes
             @return: A list of the final generation of agents
             """
+            print(str(generations_left) + " Evolution generations remaining")
             if generations_left <= 0:
                 return current_pool
             winners = self.generation(current_pool, top_k_num)
@@ -220,10 +228,16 @@ class GeneticProgram:
             elif len(next_gen) > agent_num:
                 next_gen = next_gen[0:agent_num]
 
+            if generations_left - 1 <= 0:
+                return winners
+
             return evolution_runner(next_gen, generations_left-1)
 
-        pool = []
+        start_time = round(time())
 
+
+        pool = []
+        print("starting evolution")
         # Generate the initial agent pool
         for num in range(0, agent_num):
             pool.append(self.generate_random_agent())
@@ -234,10 +248,19 @@ class GeneticProgram:
         # Perform fitness on final generation
         remaining = self.fitness(final_gen, top_k_num)
 
+        end_time = round(time())
+
         # Find best
         top_agent = remaining[0]
-        print(top_agent.traits)
+        print("Top agent name: " + top_agent.agent_name)
+        print("Traits: " + str(top_agent.traits))
+        print("Average move time: " + str(top_agent.average_time) + " milliseconds")
+        print("Total competition score: " + str(top_agent.total_win_score))
+        print("Evolution completed in " + str(end_time - start_time) + " seconds")
         return top_agent
 
 
+if __name__ == '__main__':
+    genetic = GeneticProgram()
 
+    genetic.evolution(2,4,2)
