@@ -15,6 +15,8 @@ class GeneticAgent(Agent):
         self.traits = existing_traits
         self.win_count = 0
         self.lose_count = 0
+        self.total_win_score = 0
+        self.total_genetic_rounds = 0
         self.total_turns = 0
         self.move_scores = []
         self.average_time = 0
@@ -92,7 +94,7 @@ class GeneticAgent(Agent):
         square in the subboard where the move is played
         """
 
-        depth = 5
+        depth = 3
         if self.current_piece == 1:
             val, global_move, sub_move = self.maximize_value(board, current_board, depth, float("-inf"), float("inf"))
         else:

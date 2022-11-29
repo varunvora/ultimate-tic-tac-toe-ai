@@ -5,6 +5,7 @@ be replaced once the needed portions of the genetic agent have been fleshed out.
 
 import random
 from agent.genetic_agent import GeneticAgent
+from playground.evaluator import evaluate
 from typing import Optional, Tuple, List
 
 
@@ -144,3 +145,99 @@ class GeneticProgram:
             child.traits[mutated_trait_pos] = new_value
 
         return child
+
+    def fitness(self, pool, top_k_num):
+        """
+        Takes in a list of agents and finds the top k agents in the list using the agents total
+        win score and if there is a tie then their average running time.
+        @param pool: A list of genetic agent to be evaluated for fitness
+        @param top_k_num: The max number of agents to allow through
+        @return: A list of the top k genetic agents from the given pool
+        """
+        #pool.sort(key=lambda x: (x.total_win_score, x.average_time), reverse=True)
+        pool.sort(key=lambda x: x.average_time)
+        pool.sort(key=lambda x: x.total_win_score, reverse=True)
+        return pool[0:top_k_num]
+
+    def generation(self, pool, top_k_num):
+        """
+        Evaluate all the agents in the generation by playing them against each other. After every agent
+        has play each other get the fittest agents and return them
+        @param pool: A list the genetic agents in the current generation
+        @param top_k_num: The number of agents that should remain at the end of the generation
+        @return: A list of the top k agents from the generation
+        """
+
+        def generation_runner(player, competition):
+            """
+            Plays one agents against all of the other agents
+            @param player: The main genetic agent being tested
+            @param competition: The remaining agents in the pool
+            @return: None
+            """
+            for opponent in competition:
+                player_score = evaluate(player, opponent, 15)
+                player.total_win_score += player_score
+                opponent.total_win_score += (1 - player_score)
+                player.total_genetic_rounds += 1
+
+        finished_agents = []
+        for num in range(0, len(pool)):
+            current_agent = pool.pop()
+            generation_runner(current_agent, pool)
+            finished_agents.append(current_agent)
+
+        remaining = self.fitness(finished_agents, top_k_num)
+
+        return remaining
+
+    def evolution(self, generation_num, agent_num, top_k_num):
+        """
+        Perform evolution over the specified number of generations and return the top agent after evolution
+        @param generation_num: The number of generations the evolution process should occur over
+        @param agent_num: The number of agents that should be in each generation
+        @param top_k_num: The max number of agents from each generation to accept into the parent pool
+        @return: The top genetic agent after evolution has concluded
+        """
+
+        def evolution_runner(current_pool, generations_left):
+            """
+            A recursive function that actually runs the evolution process for the specified
+            number of generations
+            @param current_pool: A list of genetic agents that represents the current generation
+            of agents
+            @param generations_left: The number of remaining generations before evolutions concludes
+            @return: A list of the final generation of agents
+            """
+            if generations_left <= 0:
+                return current_pool
+            winners = self.generation(current_pool, top_k_num)
+            next_gen = self.reproduce(winners)
+
+            if len(next_gen) < agent_num:
+                for nm in range(len(next_gen), agent_num):
+                    next_gen.append(self.generate_random_agent())
+            elif len(next_gen) > agent_num:
+                next_gen = next_gen[0:agent_num]
+
+            return evolution_runner(next_gen, generations_left-1)
+
+        pool = []
+
+        # Generate the initial agent pool
+        for num in range(0, agent_num):
+            pool.append(self.generate_random_agent())
+
+        # Run for the specified number of generations
+        final_gen = evolution_runner(pool, generation_num)
+
+        # Perform fitness on final generation
+        remaining = self.fitness(final_gen, top_k_num)
+
+        # Find best
+        top_agent = remaining[0]
+        print(top_agent.traits)
+        return top_agent
+
+
+
