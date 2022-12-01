@@ -60,5 +60,5 @@ if __name__ == '__main__':
 
     """gp = GeneticProgram()
     g = gp.generate_random_agent()
-    print(evaluate(g, p, num_games=8))"""
+    print(evaluate(g, p, num_games=1))"""
 

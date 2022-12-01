@@ -134,11 +134,11 @@ class GeneticAgent(Agent):
 
         # This variable is here in case we want to add a heuristic to sort the successors before
         # evaluation
-        available = board.get_legal_moves()
+        available = self.sort_successors(board.get_legal_moves(), board, 1)
 
         # For each available space (limited to specific or all available space depending on last
         # move)
-        for brd, subs in board.get_legal_moves():
+        for brd, subs in available:
             # Play piece
             temp_board = deepcopy(board)
             temp_board.play(1, brd, subs)
@@ -189,11 +189,11 @@ class GeneticAgent(Agent):
 
         # This variable is here in case we want to add a heuristic to sort the successors before
         # evaluation
-        available = board.get_legal_moves()
+        available = self.sort_successors(board.get_legal_moves(), board, -1)
 
         # For each available space (limited to specific or all available space depending on last
         # move)
-        for brd, subs in board.get_legal_moves():
+        for brd, subs in available:
             # Play piece
             temp_board = deepcopy(board)
             temp_board.play(-1, brd, subs)
@@ -212,6 +212,102 @@ class GeneticAgent(Agent):
             beta = min(v, beta)
         return v, best_board_move, best_subboard_move
 
+    def sort_successors(self, successors: List[Tuple[Tuple[int, int], Tuple[int, int]]], board: Board, current_piece:
+    int) -> List[Tuple[Tuple[int, int], Tuple[int, int]]]:
+        """
+        Will take the list of available squares on the board and sort them based on how good they
+        would be for the agent to play on
+        @param successors: List of the coordinates for the available squares (The results 
+        returned from board.get_legal_moves()
+        @param board: The current board object being played on
+        @param current_piece: A int representing the agent's current piece
+        @return: A sorted list of the available legal moves
+        """
+
+        def convert_to_list(grid: List[List[int]]) -> List[int]:
+            """
+            Converts the 2D array of subboards to a 1D list
+            @param grid: 2D array of subboards
+            @return: 1D list of subboards
+            """
+            array = []
+            for row in range(0, 3):
+                for col in range(0, 3):
+                    array.append(grid[row][col])
+            return array
+
+        heuristic_list = []
+
+        board_grid = board.get_grid()
+
+        for brd, subs in successors:
+            subboard = board_grid[brd[0]][brd[1]]
+            subboard_list = convert_to_list(subboard.get_grid())
+            sub_index = subs[1] + 3 * subs[0] # Convert the 2D coordinates of the subboard to a 1D index
+            eval = self.eval_pos(subboard_list, sub_index, current_piece)
+            heuristic_list.append(tuple([brd, subs, eval]))
+
+        heuristic_list.sort(key=lambda x: x[2], reverse=True)
+
+        sorted_moves = []
+        for tup in heuristic_list:
+            sorted_moves.append(tuple([tup[0], tup[1]]))
+
+        return sorted_moves
+
+    def eval_pos(self, subboard: List[int], square: int, player_piece: int) -> float:
+        """
+        Score the give position on the subboard to see how "good" it is for the agent to play on
+        @param subboard: A list of the current values in each of the subboard's squares
+        @param square: An int representing the current square to look at
+        @param player_piece: An int representing the player's current piece
+        @return: A float representing the square's score
+        """
+
+        def check_board(expected_val: int) -> bool:
+            """
+            Check all the row, columns, and diagonals and see if they match the expected value
+            @param expected_val: An int representing the expected score after adding a row,
+            column, or diagonal
+            @return: A boolean representing if the expected value was found in a row, column,
+            or diagonal
+            """
+            horizontal = (subboard[0] + subboard[1] + subboard[2] == expected_val
+                          or subboard[3] + subboard[4] + subboard[5] == expected_val
+                          or subboard[6] + subboard[7] + subboard[8] == expected_val)
+            vertical = (subboard[0] + subboard[3] + subboard[6] == expected_val
+                        or subboard[2] + subboard[4] + subboard[7] == expected_val
+                        or subboard[3] + subboard[5] + subboard[8] == expected_val)
+            diagonal = (subboard[0] + subboard[4] + subboard[8] == expected_val
+                        or subboard[2] + subboard[4] + subboard[6] == expected_val)
+
+            return horizontal or vertical or diagonal
+
+        subboard[square] = player_piece
+        evaluation = self.traits[square]
+
+        if player_piece == 1:
+            opponent_piece = -1
+        else:
+            opponent_piece = 1
+
+        # Check if it creates a pair
+        if check_board(2 * player_piece):
+            evaluation += 1
+
+        # Check if it wins the board
+        if check_board(3 * player_piece):
+            evaluation += 5
+
+        # Check if it blocks the opponent
+        subboard[square] = opponent_piece
+        if check_board(3 * opponent_piece):
+            evaluation += 2
+
+        subboard[square] = 0
+
+        return evaluation
+
     def eval_game(self, board: Board, current_board: int) -> float:
         """
         The base evaluation function that will be used to determine the value of the specific
@@ -222,7 +318,7 @@ class GeneticAgent(Agent):
         @return: A float representing the global board state's value
         """
 
-        def convert_to_list(grid: List[List[SubBoard]]) -> List[SubBoard]:
+        def convert_to_list(grid: List[List[SubBoard]]) -> List[int]:
             """
             Converts the 2D array of subboards to a 1D list
             @param grid: 2D array of subboards
@@ -254,10 +350,10 @@ class GeneticAgent(Agent):
             evaluation -= temp_eval * self.traits[num]
             global_board.append(temp_eval)
 
-        evaluation -= board_win * 5000
-        evaluation += self.evaluate_board(global_board, board_win) * 150
+        evaluation -= board_win
+        evaluation += self.evaluate_board(global_board, board_win)
 
-        return evaluation
+        return evaluation / 15
 
     def evaluate_board(self, sub_board: List[int], winner: int) -> float:
         """

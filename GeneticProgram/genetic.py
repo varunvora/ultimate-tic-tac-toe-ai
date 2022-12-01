@@ -222,6 +222,12 @@ class GeneticProgram:
             winners = self.generation(current_pool, top_k_num)
             next_gen = self.reproduce(winners)
 
+            for parent in winners:
+                if len(next_gen) >= agent_num:
+                    break
+                parent.total_win_score = 0
+                next_gen.append(parent)
+
             if len(next_gen) < agent_num:
                 for nm in range(len(next_gen), agent_num):
                     next_gen.append(self.generate_random_agent())
@@ -263,4 +269,5 @@ class GeneticProgram:
 if __name__ == '__main__':
     genetic = GeneticProgram()
 
+    # The top_k_size should be about half the size of the agent pool
     genetic.evolution(2,4,2)
