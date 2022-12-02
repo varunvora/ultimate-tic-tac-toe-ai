@@ -225,7 +225,8 @@ class GeneticProgram:
             for parent in winners:
                 if len(next_gen) >= agent_num:
                     break
-                parent.total_win_score = 0
+                if generations_left - 1 > 0:
+                    parent.total_win_score = 0
                 next_gen.append(parent)
 
             if len(next_gen) < agent_num:
