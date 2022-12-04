@@ -1,1 +1,3 @@
 numpy>=1.23.3
+
+trueskill~=0.4.5

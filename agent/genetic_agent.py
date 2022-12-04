@@ -21,6 +21,9 @@ class GeneticAgent(Agent):
         self.move_scores = []
         self.average_time = 0
 
+    def __repr__(self):
+        return f'{self.agent_name} traits: {self.traits} rating: {self.rating}'
+
     def set_traits(self, new_traits: List[float]) -> None:
         """
         Sets the traits list of the agent to the new traits list given.

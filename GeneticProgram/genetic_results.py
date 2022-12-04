@@ -5,25 +5,30 @@ be replaced once the needed portions of the genetic agent have been fleshed out.
 
 import random
 from time import time
-from genetic_agent import GeneticAgent
-from compressed_genetic import CompressedGeneticAgent
-from evaluator import evaluate
+
+import numpy as np
+
+from agent.simple_minimax_agent import SimpleMinimaxAgent
+from agent.base_agent import Agent
+from agent.genetic_agent import GeneticAgent
+from playground.evaluator import evaluate
 from typing import Optional, Tuple, List
 
 
 class GeneticProgram:
+    current_agent_number = 0
 
     def __init__(self):
-        self.current_agent_number = 0
+        pass
 
     def generate_random_agent(self) -> GeneticAgent:
         """
         Creates a new genetic agent with randomly generated traits.
         @return: A genetic agent object
         """
-        new_agent = CompressedGeneticAgent("CompressedGeneticAgent"+str(self.current_agent_number),
-                                           *self.generate_random_traits())
-        self.current_agent_number += 1
+        new_agent = GeneticAgent("GeneticAgent" + str(self.current_agent_number))
+        GeneticProgram.current_agent_number += 1
+        new_agent.set_traits(self.generate_random_traits())
         return new_agent
 
     def generate_random_traits(self) -> List[float]:
@@ -32,7 +37,7 @@ class GeneticProgram:
         @return: A list of floats that are between 0 and 1
         """
         traits = []
-        for num in range(3):
+        for num in range(0, 9):
             traits.append(random.random())
         return traits
 
@@ -54,7 +59,7 @@ class GeneticProgram:
 
             @return: A tuple of parent agents from the parent pool
             """
-            first_parent_index = random.randint(0, len(parent_pool)-1)
+            first_parent_index = random.randint(0, len(parent_pool) - 1)
 
             second_parent_index = first_parent_index
             while second_parent_index != first_parent_index:
@@ -81,7 +86,7 @@ class GeneticProgram:
         @param parent2_traits: A list of trait values from the other parent
         @return: The children that resulted from the crossover event
         """
-        cross_point = random.randint(1, len(parent1_traits)-2)
+        cross_point = random.randint(1, len(parent1_traits) - 2)
         return self.crossover(parent1_traits, parent2_traits, cross_point)
 
     def crossover(self, parent1_traits: List[float], parent2_traits: List[float], cross_point:
@@ -119,9 +124,9 @@ class GeneticProgram:
         child2_traits.extend(parent1_right)
 
         # Create the new child agents
-        child1 = GeneticAgent(agent_name="GeneticAgent"+str(self.current_agent_number),existing_traits=child1_traits)
+        child1 = GeneticAgent(agent_name="GeneticAgent" + str(self.current_agent_number), existing_traits=child1_traits)
         self.current_agent_number += 1
-        child2 = GeneticAgent(agent_name="GeneticAgent"+str(self.current_agent_number),
+        child2 = GeneticAgent(agent_name="GeneticAgent" + str(self.current_agent_number),
                               existing_traits=child2_traits)
         self.current_agent_number += 1
 
@@ -146,7 +151,7 @@ class GeneticProgram:
 
         if mutation_chance <= 3.5:
             new_value = random.random()
-            mutated_trait_pos = random.randint(0, len(child.traits)-1)
+            mutated_trait_pos = random.randint(0, len(child.traits) - 1)
             child.traits[mutated_trait_pos] = new_value
 
         return child
@@ -159,7 +164,7 @@ class GeneticProgram:
         @param top_k_num: The max number of agents to allow through
         @return: A list of the top k genetic agents from the given pool
         """
-        #pool.sort(key=lambda x: (x.total_win_score, x.average_time), reverse=True)
+        # pool.sort(key=lambda x: (x.total_win_score, x.average_time), reverse=True)
         print("Performing fitness")
         pool.sort(key=lambda x: x.average_time)
         pool.sort(key=lambda x: x.total_win_score, reverse=True)
@@ -198,7 +203,7 @@ class GeneticProgram:
 
         return remaining
 
-    def evolution(self, generation_num, agent_num, top_k_num) -> GeneticAgent:
+    def evolution(self, generation_num, agent_num, top_k_num):
         """
         Perform evolution over the specified number of generations and return the top agent after evolution
         @param generation_num: The number of generations the evolution process should occur over
@@ -238,10 +243,9 @@ class GeneticProgram:
             if generations_left - 1 <= 0:
                 return winners
 
-            return evolution_runner(next_gen, generations_left-1)
+            return evolution_runner(next_gen, generations_left - 1)
 
         start_time = round(time())
-
 
         pool = []
         print("starting evolution")
@@ -264,12 +268,94 @@ class GeneticProgram:
         print("Average move time: " + str(top_agent.average_time) + " milliseconds")
         print("Total competition score: " + str(top_agent.total_win_score))
         print("Evolution completed in " + str(end_time - start_time) + " seconds")
-        duration = end_time - start_time
-        return top_agent, duration
+        return top_agent
+
+
+def trait_assignment(center: float, corner: float, side: float) -> list[float]:
+    return [corner, side, corner, side, center, side, corner, side, corner]
+
+
+def trait_extraction(t: list[float]) -> tuple[float, float, float]:
+    assert t[0] == t[2] == t[6] == t[8]
+    assert t[1] == t[3] == t[5] == t[7]
+    return t[4], t[0], t[1]
+
+
+def make_random_agent():
+    gp = GeneticProgram()
+    g = gp.generate_random_agent()
+    g.set_traits(trait_assignment(random.random(), random.random(), random.random()))
+    return g
+
+
+def make_agent(center, corner, side) -> GeneticAgent:
+    gp = GeneticProgram()
+    g = gp.generate_random_agent()
+    g.set_traits(trait_assignment(center, corner, side))
+    return g
 
 
 if __name__ == '__main__':
-    genetic = GeneticProgram()
+    import random
+    from itertools import combinations
+    from trueskill import Rating, quality_1vs1, rate_1vs1  # elo package owner recommended to use this
+    from time import time
 
-    # The top_k_size should be about half the size of the agent pool
-    genetic.evolution(2,4,2)
+    # p = SimpleMinimaxAgent(max_depth=5)
+    # # print(evaluate(p, q, num_games=16))
+    #
+    # print(evaluate(g, p, num_games=10))
+    #
+    # generation = 0
+    # gp = GeneticProgram().generate_random_agent()
+    # gp.set_traits([])
+    agents: list[GeneticAgent] = [make_random_agent() for _ in range(10)]
+    for generation in range(100):
+        start_time = time()
+        random.shuffle(agents)
+        for a1, a2 in combinations(agents, 2):
+            a1_score = evaluate(a1, a2, num_games=4)
+            print(a1, a2, a1_score)  # todo comment this
+            if a1_score >= 0.5:
+                x, y = rate_1vs1(a1.rating, a2.rating, drawn=a1_score == 0.5)
+                a1.rating, a2.rating = x, y
+            else:
+                x, y = rate_1vs1(a2.rating, a1.rating)
+                a1.rating, a2.rating = y, x
+            print(a1, a2, a1_score)  # todo comment this
+        max_rating = max([x.rating.mu for x in agents])
+        best_agent = [x for x in agents if x.rating.mu == max_rating][0]
+        print('Generation', generation,
+              'mean', sum([x.rating.mu for x in agents]) / len(agents),
+              'max_rating', max_rating,
+              'best_traits', trait_extraction(best_agent.traits))
+        agents.sort(key=lambda x: x.rating.mu, reverse=True)
+        first = agents[0]
+        second = agents[1]
+
+        first_traits = trait_extraction(first.traits)
+        second_traits = trait_extraction(second.traits)
+
+        # Does some mutations
+        children = {
+            first_traits,
+            second_traits,
+            (first_traits[0], first_traits[1], random.random()),
+            (first_traits[0], random.random(), second_traits[2]),
+            (random.random(), first_traits[1], first_traits[2]),
+            (second_traits[0], second_traits[1], random.random()),
+            (second_traits[0], random.random(), first_traits[2]),
+            (random.random(), second_traits[1], second_traits[2]),
+            (first_traits[0], second_traits[1], first_traits[2]),
+            (second_traits[0], first_traits[1], second_traits[2])
+        }
+
+        agents = [make_agent(*x) for x in children]
+        duration = time() - start_time
+        print('Generation', generation, 'took', duration, 'seconds')
+
+    print('THE BEST', best_agent)
+
+# Generation vs (mean score and max score) graph
+# Run 10 games with the best traits against minimax agent with depth 2 to 6
+# Run 100 games with traits against random agent

@@ -2,12 +2,11 @@ from copy import deepcopy
 from typing import Optional
 from agent.base_agent import Agent
 from game.board import Board
-from random import sample
 
 
-class SimpleMinimaxAgent(Agent):
+class ParameterizedMinimaxAgent(Agent):
 
-    def __init__(self, name="Simple Minimax Agent", max_depth=float('inf')):
+    def __init__(self, name="Parameterized Minimax Agent", max_depth=float('inf')):
         super().__init__(name)
         self.max_depth = max_depth
 
@@ -29,7 +28,10 @@ class SimpleMinimaxAgent(Agent):
         if board.is_terminal():
             return board.winner, None
         if depth >= self.max_depth:
-            return 0, sample(board.get_legal_moves(), 1)[0]
+            for (x, y), (i, j) in board.get_legal_moves():
+                board_copy = deepcopy(board)
+                board_copy.play(1, (x, y), (i, j))
+            return self.evaluate(board, False)
         v, move = -float('inf'), None
         for (x, y), (i, j) in board.get_legal_moves():
             board_copy = deepcopy(board)
@@ -47,7 +49,7 @@ class SimpleMinimaxAgent(Agent):
         if board.is_terminal():
             return board.winner, None
         if depth >= self.max_depth:
-            return 0, sample(board.get_legal_moves(), 1)[0]
+            return self.evaluate(board, False)
         v, move = float('inf'), None
         for (x, y), (i, j) in board.get_legal_moves():
             board_copy = deepcopy(board)
@@ -59,3 +61,15 @@ class SimpleMinimaxAgent(Agent):
             if v <= alpha:
                 return v, move
         return v, move
+
+    def evaluate(self, board: Board, maximizing: bool) -> tuple[float, Optional[tuple[tuple[int, int], tuple[int, int]]]]:
+        board_copy = deepcopy(board)
+        best = -float('inf') if maximizing else float('inf'), None
+        for ((x, y), (i, j)) in board.get_legal_moves():
+            board_copy.play(board.turn, (x, y), (i, j))
+
+
+
+
+
+

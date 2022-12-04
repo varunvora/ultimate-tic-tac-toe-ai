@@ -34,7 +34,7 @@ def evaluate(a: Agent, b: Agent, num_games: int = 100) -> float:
     x_player, o_player = a, b
     for i in range(num_games):
         winner = play(x_player, o_player)
-        a_points = a_points + 1 if winner == a else (a_points + 0.5 if winner is None else a_points)
+        a_points = a_points + 1 if id(winner) == id(a) else (a_points + 0.5 if winner is None else a_points)
         x_player, o_player = o_player, x_player  # swap agents for the next game
     return a_points / num_games
 
