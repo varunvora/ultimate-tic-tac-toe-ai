@@ -310,19 +310,17 @@ if __name__ == '__main__':
     # gp = GeneticProgram().generate_random_agent()
     # gp.set_traits([])
     agents: list[GeneticAgent] = [make_random_agent() for _ in range(10)]
-    for generation in range(100):
+    for generation in range(10):
         start_time = time()
         random.shuffle(agents)
         for a1, a2 in combinations(agents, 2):
-            a1_score = evaluate(a1, a2, num_games=4)
-            print(a1, a2, a1_score)  # todo comment this
+            a1_score = evaluate(a1, a2, num_games=2)
             if a1_score >= 0.5:
                 x, y = rate_1vs1(a1.rating, a2.rating, drawn=a1_score == 0.5)
                 a1.rating, a2.rating = x, y
             else:
                 x, y = rate_1vs1(a2.rating, a1.rating)
                 a1.rating, a2.rating = y, x
-            print(a1, a2, a1_score)  # todo comment this
         max_rating = max([x.rating.mu for x in agents])
         best_agent = [x for x in agents if x.rating.mu == max_rating][0]
         print('Generation', generation,
@@ -337,7 +335,7 @@ if __name__ == '__main__':
         second_traits = trait_extraction(second.traits)
 
         # Does some mutations
-        children = {
+        children = [
             first_traits,
             second_traits,
             (first_traits[0], first_traits[1], random.random()),
@@ -348,7 +346,7 @@ if __name__ == '__main__':
             (random.random(), second_traits[1], second_traits[2]),
             (first_traits[0], second_traits[1], first_traits[2]),
             (second_traits[0], first_traits[1], second_traits[2])
-        }
+        ]
 
         agents = [make_agent(*x) for x in children]
         duration = time() - start_time
