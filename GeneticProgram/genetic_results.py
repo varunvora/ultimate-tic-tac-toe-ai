@@ -5,7 +5,7 @@ be replaced once the needed portions of the genetic agent have been fleshed out.
 
 import random
 from time import time
-
+from copy import deepcopy
 import numpy as np
 
 from agent.simple_minimax_agent import SimpleMinimaxAgent
@@ -289,10 +289,9 @@ def make_random_agent():
 
 
 def make_agent(center, corner, side) -> GeneticAgent:
-    gp = GeneticProgram()
-    g = gp.generate_random_agent()
-    g.set_traits(trait_assignment(center, corner, side))
-    return g
+    g1 = make_random_agent()
+    g1.set_traits(trait_assignment(center, corner, side))
+    return g1
 
 
 if __name__ == '__main__':
@@ -310,7 +309,11 @@ if __name__ == '__main__':
     # gp = GeneticProgram().generate_random_agent()
     # gp.set_traits([])
     agents: list[GeneticAgent] = [make_random_agent() for _ in range(10)]
-    for generation in range(10):
+
+    # feed the values from a previous run or what you think it should be.
+    agents[0].set_traits(trait_assignment(0.8, 0.5, 0.35))
+    agents[1].set_traits(trait_assignment(0.22, 0.2, 0.17))
+    for generation in range(50):
         start_time = time()
         random.shuffle(agents)
         for a1, a2 in combinations(agents, 2):
@@ -321,38 +324,38 @@ if __name__ == '__main__':
             else:
                 x, y = rate_1vs1(a2.rating, a1.rating)
                 a1.rating, a2.rating = y, x
-        max_rating = max([x.rating.mu for x in agents])
-        best_agent = [x for x in agents if x.rating.mu == max_rating][0]
-        print('Generation', generation,
-              'mean', sum([x.rating.mu for x in agents]) / len(agents),
-              'max_rating', max_rating,
-              'best_traits', trait_extraction(best_agent.traits))
         agents.sort(key=lambda x: x.rating.mu, reverse=True)
         first = agents[0]
         second = agents[1]
+        max_rating = first.rating.mu
+        print('Generation', generation,
+              'mean', sum([x.rating.mu for x in agents]) / len(agents),
+              'max_rating', max_rating,
+              'best_traits', trait_extraction(first.traits))
+
 
         first_traits = trait_extraction(first.traits)
         second_traits = trait_extraction(second.traits)
 
         # Does some mutations
         children = [
-            first_traits,
-            second_traits,
-            (first_traits[0], first_traits[1], random.random()),
-            (first_traits[0], random.random(), second_traits[2]),
-            (random.random(), first_traits[1], first_traits[2]),
-            (second_traits[0], second_traits[1], random.random()),
-            (second_traits[0], random.random(), first_traits[2]),
-            (random.random(), second_traits[1], second_traits[2]),
-            (first_traits[0], second_traits[1], first_traits[2]),
-            (second_traits[0], first_traits[1], second_traits[2])
+            first,
+            second,
+            make_agent(first_traits[0], first_traits[1], random.random()),
+            make_agent(first_traits[0], random.random(), second_traits[2]),
+            make_agent(random.random(), first_traits[1], first_traits[2]),
+            make_agent(second_traits[0], second_traits[1], random.random()),
+            make_agent(second_traits[0], random.random(), first_traits[2]),
+            make_agent(random.random(), second_traits[1], second_traits[2]),
+            make_agent(first_traits[0], second_traits[1], first_traits[2]),
+            make_agent(second_traits[0], first_traits[1], second_traits[2])
         ]
 
-        agents = [make_agent(*x) for x in children]
         duration = time() - start_time
         print('Generation', generation, 'took', duration, 'seconds')
 
-    print('THE BEST', best_agent)
+    print('THE BEST', first)
+    print('SECOND BEST', second)
 
 # Generation vs (mean score and max score) graph
 # Run 10 games with the best traits against minimax agent with depth 2 to 6
