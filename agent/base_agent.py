@@ -1,4 +1,5 @@
 from game.board import Board
+from trueskill import Rating
 
 
 class Agent:
@@ -11,6 +12,7 @@ class Agent:
         self.current_piece = None
         self.current_board = None
         self.opponent_piece = None
+        self.rating = Rating()
 
     def play_move(self, board: Board):
         """
