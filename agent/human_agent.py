@@ -12,6 +12,7 @@ class HumanAgent(Agent):
     def play_move(self, board: Board):
         assert not board.is_terminal()
         legal_moves = board.get_legal_moves()
-        x, y, i, j = map(int, input().split())
+        print('Agent played', board.last_move)
+        x, y, i, j = map(int, input('Your move: ').split())
         assert ((x, y), (i, j)) in legal_moves
         board.play(board.turn, (x, y), (i, j))
